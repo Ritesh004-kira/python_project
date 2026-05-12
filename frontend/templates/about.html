@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Moctale</title>
+    <title>About Us - Mera Cinema</title>
     <!-- Load CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +12,7 @@
 
     <!-- Navbar -->
     <nav class="navbar glass">
-        <a href="{{ url_for('main.index') }}" class="nav-brand">Moctale</a>
+        <a href="{{ url_for('main.index') }}" class="nav-brand">Mera Cinema</a>
         <div class="nav-links">
             <a href="{{ url_for('main.index') }}">Home</a>
             {% if session.user_id %}
@@ -29,7 +29,7 @@
     <header class="about-hero">
         <h1 style="font-size: 3.5rem; margin-bottom: 20px;">Redefining How You Discover Movies</h1>
         <p style="font-size: 1.2rem; color: var(--text-secondary);">
-            Moctale is an intelligent movie recommendation system designed to understand your unique taste. We blend advanced AI with a passionate community of film lovers to bring you the best cinematic experiences.
+            Mera Cinema is an intelligent movie recommendation system designed to understand your unique taste. We blend advanced AI with a passionate community of film lovers to bring you the best cinematic experiences.
         </p>
     </header>
 

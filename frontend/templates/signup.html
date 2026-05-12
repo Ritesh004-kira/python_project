@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - Moctale</title>
+    <title>Sign Up - Mera Cinema</title>
     <!-- Load CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +12,7 @@
 
     <!-- Navbar -->
     <nav class="navbar glass">
-        <a href="{{ url_for('main.index') }}" class="nav-brand">Moctale</a>
+        <a href="{{ url_for('main.index') }}" class="nav-brand">Mera Cinema</a>
         <div class="nav-links">
             <a href="{{ url_for('main.index') }}">Home</a>
             <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Login</a>
@@ -23,7 +23,7 @@
     <div class="auth-container">
         <div class="auth-card glass">
             <h2>Create an Account</h2>
-            <p>Join Moctale to get AI-powered movie recommendations.</p>
+            <p>Join Mera Cinema to get AI-powered movie recommendations.</p>
             
             {% with messages = get_flashed_messages() %}
               {% if messages %}

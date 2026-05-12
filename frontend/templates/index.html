@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moctale - Smart Movie Recommendations</title>
+    <title>Mera Cinema - Smart Movie Recommendations</title>
     <meta name="description" content="Discover your next favorite movie with our AI-powered recommendation engine.">
     <!-- Load CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -13,7 +13,7 @@
 
     <!-- Navbar -->
     <nav class="navbar glass">
-        <a href="{{ url_for('main.index') }}" class="nav-brand">Moctale</a>
+        <a href="{{ url_for('main.index') }}" class="nav-brand">Mera Cinema</a>
         <div class="nav-links">
             <a href="{{ url_for('main.index') }}">Home</a>
             <a href="{{ url_for('movies.list_movies') }}">Movies</a>
@@ -185,6 +185,9 @@
                 <input type="email" name="email" class="form-input" placeholder="Enter your email or phone number" required>
                 <button type="submit" class="btn btn-primary">Subscribe</button>
             </form>
+            <p style="font-size: 0.8rem; margin-top: 15px; opacity: 0.7; font-style: italic;">
+                <i class="fas fa-info-circle"></i> This feature will be available in a future update.
+            </p>
         </div>
     </section>
 
