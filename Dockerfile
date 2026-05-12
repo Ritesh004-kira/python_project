@@ -27,6 +27,9 @@ RUN mkdir -p backend/instance && chmod 777 backend/instance
 # Seed the database during build (pre-populates movies and ratings)
 RUN python backend/scripts/seed_movielens.py
 
+# Ensure the database file and instance folder are writable by the HF user
+RUN chmod -R 777 backend/instance
+
 # Expose the port Hugging Face expects
 EXPOSE 7860
 
