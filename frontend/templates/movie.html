@@ -3,56 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interstellar - Cine Plus</title>
+    <title>{% if single_view %}{{ movie.title }}{% else %}Movies{% endif %} - Moctale</title>
     <!-- Load CSS -->
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <!-- Navbar -->
     <nav class="navbar glass">
-        <a href="index.html" class="nav-brand">Cine Plus</a>
+        <a href="{{ url_for('main.index') }}" class="nav-brand">Moctale</a>
         <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="index.html#motd">Movie of the Day</a>
-            <a href="login.html" class="btn btn-outline">Login</a>
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('movies.list_movies') }}">Movies</a>
+            {% if session.user_id %}
+                <span style="color: white; margin-right: 15px;">Hi, {{ session.user_name }}</span>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Login</a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Sign Up</a>
+            {% endif %}
         </div>
     </nav>
 
+    {% if single_view %}
     <!-- Movie Detail Header -->
     <header class="movie-detail-header">
-        <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Interstellar Poster" class="movie-poster">
+        <img src="{{ movie.image_url }}" alt="{{ movie.title }} Poster" class="movie-poster">
         <div class="movie-info">
-            <h1>Interstellar</h1>
+            <h1>{{ movie.title }}</h1>
             <div class="movie-meta">
-                <span class="tag">Sci-Fi</span>
-                <span class="tag">Adventure</span>
-                <span class="tag">2014</span>
-                <span class="tag"><i class="fas fa-clock"></i> 2h 49m</span>
+                <span class="tag">{{ movie.genre }}</span>
+                <span class="tag">{{ movie.year }}</span>
+                <span class="tag"><i class="fas fa-star" style="color: gold;"></i> {{ movie.rating }}</span>
             </div>
             <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 1.1rem;">
-                A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.
+                {{ movie.description }}
             </p>
-            <div style="margin-bottom: 30px;">
-                <strong>Director:</strong> Christopher Nolan <br>
-                <strong>Cast:</strong> Matthew McConaughey, Anne Hathaway, Jessica Chastain
-            </div>
             
-            <a href="#" class="btn btn-primary"><i class="fas fa-play"></i> Watch Trailer</a>
             <a href="#reviews" class="btn btn-outline"><i class="fas fa-pen"></i> Write a Review</a>
         </div>
     </header>
+
+    {% if similar_movies %}
+    <section class="reviews-section" style="margin-top: 20px;">
+        <h2 class="section-title">
+            <i class="fas fa-film" style="color: var(--accent-primary); margin-right: 8px;"></i>
+            Similar Movies <small style="font-size: 0.75rem; opacity: 0.6; margin-left: 8px;">Content-Based</small>
+        </h2>
+        <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px;">
+            {% for m in similar_movies %}
+            <div class="motd-card glass" style="flex: 0 0 280px;">
+                <div class="motd-image" style="height: 140px;">
+                    <img src="{{ m.image_url }}" alt="{{ m.title }}">
+                </div>
+                <div class="motd-content" style="padding: 15px;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 8px;">{{ m.title }}</h3>
+                    <span class="tag" style="font-size: 0.75rem;">{{ m.genre.split(',')[0] }}</span>
+                    <br><br>
+                    <a href="{{ url_for('movies.movie_detail', movie_id=m.id) }}" class="btn btn-outline" style="padding: 5px 12px; font-size: 0.85rem;">View</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if hybrid_recs %}
+    <section class="reviews-section" style="margin-top: 30px;">
+        <h2 class="section-title">
+            <i class="fas fa-magic" style="color: var(--accent-primary); margin-right: 8px;"></i>
+            You May Also Like
+            <small style="font-size: 0.75rem; opacity: 0.6; margin-left: 8px;">
+                {% if session.user_id %}AI-Powered Hybrid{% else %}Trending Now{% endif %}
+            </small>
+        </h2>
+        <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px;">
+            {% for m in hybrid_recs %}
+            <div class="motd-card glass" style="flex: 0 0 280px;">
+                <div class="motd-image" style="height: 140px;">
+                    <img src="{{ m.image_url }}" alt="{{ m.title }}">
+                </div>
+                <div class="motd-content" style="padding: 15px;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 6px;">{{ m.title }}</h3>
+                    <div style="margin-bottom: 8px;">
+                        <span class="tag" style="font-size: 0.75rem;">{{ m.genre.split(',')[0] }}</span>
+                        <span class="tag" style="font-size: 0.75rem;">{{ m.year }}</span>
+                    </div>
+                    <a href="{{ url_for('movies.movie_detail', movie_id=m.id) }}" class="btn btn-primary" style="padding: 5px 12px; font-size: 0.85rem;">Explore</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
 
     <!-- Rating & Reviews Section -->
     <section id="reviews" class="reviews-section">
         <h2 class="section-title">Ratings & Reviews</h2>
         
+        {% if session.user_id %}
         <div class="review-form glass">
             <h3>Leave your review</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Share your thoughts with the Cine Plus community.</p>
-            
-            <form action="#" method="POST">
+            <form action="{{ url_for('movies.movie_detail', movie_id=movie.id) }}" method="POST">
                 <!-- Star Rating -->
                 <div class="star-rating">
                     <i class="fas fa-star star" data-value="1"></i>
@@ -62,35 +116,61 @@
                     <i class="fas fa-star star" data-value="5"></i>
                 </div>
                 <input type="hidden" id="rating-value" name="rating" value="0">
-                
-                <!-- Review Text -->
-                <textarea class="review-textarea" name="review" placeholder="Write your review here... (What did you like or dislike?)" required></textarea>
-                
+                <textarea class="review-textarea" name="review" placeholder="Write your review here..." required></textarea>
                 <button type="submit" class="btn btn-primary">Submit Review</button>
             </form>
         </div>
+        {% else %}
+        <p><a href="{{ url_for('auth.login') }}" style="color: var(--accent-primary);">Log in</a> to leave a review.</p>
+        {% endif %}
         
-        <!-- Mock Reviews -->
+        <!-- Reviews List -->
         <div style="margin-top: 40px;">
+            {% for r in movie.reviews %}
             <div class="glass" style="padding: 20px; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <strong>Alex Johnson</strong>
-                    <span style="color: #ffc107;"><i class="fas fa-star"></i> 5.0</span>
+                    <strong>{{ r.user.name }}</strong>
+                    <span style="color: #ffc107;"><i class="fas fa-star"></i> {{ r.rating }}</span>
                 </div>
-                <p style="color: var(--text-secondary);">Absolutely breathtaking visuals and a profound story. Hans Zimmer's score is out of this world!</p>
+                <p style="color: var(--text-secondary);">{{ r.text }}</p>
             </div>
-            
-            <div class="glass" style="padding: 20px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <strong>Samantha Lee</strong>
-                    <span style="color: #ffc107;"><i class="fas fa-star"></i> 4.0</span>
-                </div>
-                <p style="color: var(--text-secondary);">A great sci-fi movie, very thought-provoking, though the ending was a bit confusing for me.</p>
-            </div>
+            {% else %}
+            <p>No reviews yet.</p>
+            {% endfor %}
         </div>
     </section>
+    
+    {% else %}
+    
+    <header class="hero" style="min-height: auto; padding: 100px 20px 40px;">
+        <h1>{% if search_query %}Search Results for "{{ search_query }}"{% else %}All Movies{% endif %}</h1>
+    </header>
+    
+    <section class="reviews-section">
+        <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+            {% for m in movies %}
+            <div class="motd-card glass" style="flex: 0 0 350px;">
+                <div class="motd-image" style="height: 200px;">
+                    <img src="{{ m.image_url }}" alt="{{ m.title }}">
+                </div>
+                <div class="motd-content">
+                    <h2>{{ m.title }}</h2>
+                    <div class="movie-meta">
+                        <span class="tag">{{ m.genre }}</span>
+                        <span class="tag">{{ m.year }}</span>
+                    </div>
+                    <a href="{{ url_for('movies.movie_detail', movie_id=m.id) }}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+            {% else %}
+            <p>No movies found.</p>
+            {% endfor %}
+        </div>
+    </section>
+    
+    {% endif %}
 
     <!-- Load JavaScript -->
-    <script src="../animation/app.js"></script>
+    <script src="{{ url_for('static', filename='animation/app.js') }}"></script>
 </body>
 </html>

@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cine Plus - Smart Movie Recommendations</title>
+    <title>Moctale - Smart Movie Recommendations</title>
     <meta name="description" content="Discover your next favorite movie with our AI-powered recommendation engine.">
     <!-- Load CSS -->
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <!-- Navbar -->
     <nav class="navbar glass">
-        <a href="index.html" class="nav-brand">Cine Plus</a>
+        <a href="{{ url_for('main.index') }}" class="nav-brand">Moctale</a>
         <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="movie.html">Movies</a>
-            <a href="about.html">About Us</a>
-            <a href="login.html" class="btn btn-outline">Login</a>
-            <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('movies.list_movies') }}">Movies</a>
+            <a href="{{ url_for('main.about') }}">About Us</a>
+            {% if session.user_id %}
+                <span style="color: white; margin-right: 15px;">Hi, {{ session.user_name }}</span>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Login</a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Sign Up</a>
+            {% endif %}
         </div>
     </nav>
 
@@ -28,45 +33,147 @@
         <h1>Find the Perfect Movie <br>For Tonight.</h1>
         <p>Advanced AI recommendations based on your unique taste. Search thousands of movies and let us do the magic.</p>
         
-        <div class="search-container glass">
-            <input type="text" class="search-input" placeholder="Search for movies, actors, or directors...">
-            <select class="filter-select">
+        <form action="{{ url_for('movies.search') }}" method="GET" class="search-container glass">
+            <input type="text" name="q" class="search-input" placeholder="Search for movies, actors, or directors...">
+            <select name="genre" class="filter-select">
                 <option value="">All Genres</option>
-                <option value="action">Action</option>
-                <option value="comedy">Comedy</option>
-                <option value="drama">Drama</option>
-                <option value="scifi">Sci-Fi</option>
-                <option value="horror">Horror</option>
+                <option value="Action">Action</option>
+                <option value="Comedy">Comedy</option>
+                <option value="Drama">Drama</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+                <option value="Horror">Horror</option>
             </select>
-            <select class="filter-select">
+            <select name="year" class="filter-select">
                 <option value="">Any Year</option>
                 <option value="2020s">2020s</option>
                 <option value="2010s">2010s</option>
                 <option value="2000s">2000s</option>
             </select>
-            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-        </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+        </form>
     </header>
 
     <!-- Movie of the Day -->
     <section class="motd-section" id="motd">
         <h2 class="section-title">Movie of the Day</h2>
+        {% if motd %}
         <div class="motd-card glass">
             <div class="motd-image">
-                <!-- Using a placeholder image that looks cinematic -->
-                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Movie of the Day">
+                <img src="{{ motd.image_url }}" alt="Movie of the Day">
             </div>
             <div class="motd-content">
-                <h2>Interstellar</h2>
+                <h2>{{ motd.title }}</h2>
                 <div class="movie-meta">
-                    <span class="tag">Sci-Fi</span>
-                    <span class="tag">2014</span>
-                    <span class="tag"><i class="fas fa-star" style="color: gold;"></i> 8.6</span>
+                    <span class="tag">{{ motd.genre }}</span>
+                    <span class="tag">{{ motd.year }}</span>
+                    <span class="tag"><i class="fas fa-star" style="color: gold;"></i> {{ motd.rating }}</span>
                 </div>
-                <p>A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival. Experience the visual masterpiece of Christopher Nolan.</p>
-                <a href="movie.html" class="btn btn-primary">View Details & Rate</a>
+                <p>{{ motd.description }}</p>
+                <a href="{{ url_for('movies.movie_detail', movie_id=motd.id) }}" class="btn btn-primary">View Details & Rate</a>
             </div>
         </div>
+        {% endif %}
+    </section>
+
+    <!-- Recommended for You -->
+    <section class="motd-section" id="recommended">
+        <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 30px; flex-wrap: wrap;">
+            <h2 class="section-title" style="margin-bottom: 0;">
+                {% if session.user_id %}
+                    <i class="fas fa-magic" style="color: var(--accent-primary);"></i>
+                {% else %}
+                    <i class="fas fa-fire" style="color: #ff6b35;"></i>
+                {% endif %}
+                {{ rec_label }}
+            </h2>
+            <span style="
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                padding: 3px 10px;
+                border-radius: 20px;
+                background: rgba(255,255,255,0.08);
+                color: var(--text-secondary);
+                border: 1px solid rgba(255,255,255,0.12);
+            ">{{ rec_engine_label }}</span>
+        </div>
+
+        {% if personal_recs %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 24px;">
+            {% for m in personal_recs %}
+            <a href="{{ url_for('movies.movie_detail', movie_id=m.id) }}"
+               style="text-decoration: none; color: inherit;"
+               title="{{ m.title }}">
+                <div class="glass" style="
+                    border-radius: 16px;
+                    overflow: hidden;
+                    transition: transform 0.25s ease, box-shadow 0.25s ease;
+                    cursor: pointer;
+                " onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.4)'"
+                   onmouseout="this.style.transform='translateY(0)';this.style.boxShadow=''">
+
+                    <!-- Poster -->
+                    <div style="position: relative; height: 160px; overflow: hidden;">
+                        <img src="{{ m.image_url }}" alt="{{ m.title }}"
+                             style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        <!-- Genre pill overlay -->
+                        <span style="
+                            position: absolute; top: 10px; left: 10px;
+                            background: rgba(0,0,0,0.65);
+                            backdrop-filter: blur(6px);
+                            color: #fff;
+                            font-size: 0.68rem;
+                            font-weight: 700;
+                            letter-spacing: 0.06em;
+                            text-transform: uppercase;
+                            padding: 3px 9px;
+                            border-radius: 20px;
+                        ">{{ m.genre.split(',')[0].strip() }}</span>
+                        <!-- Year badge -->
+                        <span style="
+                            position: absolute; bottom: 10px; right: 10px;
+                            background: rgba(0,0,0,0.55);
+                            backdrop-filter: blur(6px);
+                            color: #ddd;
+                            font-size: 0.7rem;
+                            padding: 2px 8px;
+                            border-radius: 12px;
+                        ">{{ m.year }}</span>
+                    </div>
+
+                    <!-- Info -->
+                    <div style="padding: 14px 16px 16px;">
+                        <h3 style="
+                            font-size: 0.95rem;
+                            font-weight: 700;
+                            margin: 0 0 8px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        ">{{ m.title }}</h3>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #ffc107; font-size: 0.82rem;">
+                                <i class="fas fa-star"></i> {{ m.rating }}
+                            </span>
+                            <span style="
+                                font-size: 0.75rem;
+                                color: var(--accent-primary);
+                                font-weight: 600;
+                                letter-spacing: 0.04em;
+                            ">Explore &rarr;</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--text-secondary);">
+            <a href="{{ url_for('auth.login') }}" style="color: var(--accent-primary);">Log in</a>
+            to get personalised movie recommendations.
+        </p>
+        {% endif %}
     </section>
 
     <!-- Subscribe Section -->
@@ -74,14 +181,14 @@
         <div class="subscribe-card glass">
             <h2>Never Miss a Good Movie</h2>
             <p>Subscribe to get personalized 'Movie of the Day' recommendations directly to your WhatsApp or Email.</p>
-            <form id="subscribe-form" class="subscribe-form">
-                <input type="email" class="form-input" placeholder="Enter your email or phone number" required>
+            <form id="subscribe-form" class="subscribe-form" action="#" method="POST">
+                <input type="email" name="email" class="form-input" placeholder="Enter your email or phone number" required>
                 <button type="submit" class="btn btn-primary">Subscribe</button>
             </form>
         </div>
     </section>
 
     <!-- Load JavaScript -->
-    <script src="../animation/app.js"></script>
+    <script src="{{ url_for('static', filename='animation/app.js') }}"></script>
 </body>
 </html>

@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Cine Plus</title>
+    <title>Login - Moctale</title>
     <!-- Load CSS -->
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <!-- Navbar -->
     <nav class="navbar glass">
-        <a href="index.html" class="nav-brand">Cine Plus</a>
+        <a href="{{ url_for('main.index') }}" class="nav-brand">Moctale</a>
         <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="signup.html" class="btn btn-outline">Sign Up</a>
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('auth.signup') }}" class="btn btn-outline">Sign Up</a>
         </div>
     </nav>
 
@@ -25,7 +25,17 @@
             <h2>Welcome Back</h2>
             <p>Log in to access your personalized recommendations.</p>
             
-            <form action="#" method="POST">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <ul class="flashes" style="color: red; list-style: none; padding: 0;">
+                {% for message in messages %}
+                  <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('auth.login') }}" method="POST">
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
@@ -39,12 +49,12 @@
             </form>
             
             <div class="auth-links">
-                <p>Don't have an account? <a href="signup.html" style="color: var(--accent-primary);">Sign Up</a></p>
+                <p>Don't have an account? <a href="{{ url_for('auth.signup') }}" style="color: var(--accent-primary);">Sign Up</a></p>
             </div>
         </div>
     </div>
 
     <!-- Load JavaScript -->
-    <script src="../animation/app.js"></script>
+    <script src="{{ url_for('static', filename='animation/app.js') }}"></script>
 </body>
 </html>
