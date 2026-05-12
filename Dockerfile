@@ -21,8 +21,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
-# Create the instance folder for SQLite (if it doesn't exist)
+# Create the instance folder for SQLite
 RUN mkdir -p backend/instance && chmod 777 backend/instance
+
+# Seed the database during build (pre-populates movies and ratings)
+RUN python backend/scripts/seed_movielens.py
 
 # Expose the port Hugging Face expects
 EXPOSE 7860
