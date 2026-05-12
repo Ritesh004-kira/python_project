@@ -27,9 +27,6 @@ venv/
 ENV/
 env/
 .venv/
-Scripts/
-Lib/
-include/
 
 # Flask / SQLAlchemy
 instance/
