@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Moctale</title>
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar glass">
+        <a href="index.html" class="nav-brand">Moctale</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="signup.html" class="btn btn-outline">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="auth-container">
+        <div class="auth-card glass">
+            <h2>Welcome Back</h2>
+            <p>Log in to access your personalized recommendations.</p>
+            
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">Log In</button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Don't have an account? <a href="signup.html" style="color: var(--accent-primary);">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="../animation/app.js"></script>
+</body>
+</html>

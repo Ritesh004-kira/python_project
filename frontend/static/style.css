@@ -1,0 +1,452 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+:root {
+  --bg-color: #0d0d12;
+  --surface-color: rgba(255, 255, 255, 0.05);
+  --surface-border: rgba(255, 255, 255, 0.1);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0b0;
+  --accent-primary: #7b2cbf;
+  --accent-secondary: #ff007f;
+  --accent-glow: rgba(123, 44, 191, 0.5);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: var(--surface-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+}
+
+/* Typography & Links */
+a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--accent-secondary);
+}
+
+h1, h2, h3 {
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--accent-glow);
+  filter: brightness(1.1);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.btn-outline:hover {
+  background: var(--accent-primary);
+  color: white;
+}
+
+/* Navbar */
+.navbar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 20px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
+
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(to right, #fff, var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+/* Hero Section */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 100px 5% 50px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  filter: blur(50px);
+}
+
+.hero h1 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-bottom: 40px;
+}
+
+/* Search Area */
+.search-container {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 15px 25px;
+  border-radius: 30px;
+  border: 1px solid var(--surface-border);
+  background: var(--surface-color);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: var(--transition);
+}
+
+.search-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.filter-select {
+  padding: 15px 25px;
+  border-radius: 30px;
+  border: 1px solid var(--surface-border);
+  background: var(--bg-color);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Movie of the Day */
+.motd-section {
+  padding: 80px 5%;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.motd-card {
+  display: flex;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 40px;
+  padding: 30px;
+  align-items: center;
+}
+
+.motd-image {
+  flex: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.motd-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.motd-card:hover .motd-image img {
+  transform: scale(1.05);
+}
+
+.motd-content {
+  flex: 1;
+}
+
+.motd-content h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.motd-content p {
+  color: var(--text-secondary);
+  margin-bottom: 25px;
+}
+
+/* Subscription */
+.subscribe-section {
+  padding: 80px 5%;
+  text-align: center;
+}
+
+.subscribe-card {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 50px 30px;
+}
+
+.subscribe-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+/* Authentication Forms */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 5%;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 50px 40px;
+  text-align: center;
+}
+
+.auth-card h2 {
+  margin-bottom: 10px;
+}
+
+.auth-card p {
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--surface-border);
+  background: rgba(0,0,0,0.2);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  border-color: var(--accent-primary);
+  background: rgba(0,0,0,0.4);
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  font-size: 1.1rem;
+}
+
+.auth-links {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Movie Detail Page */
+.movie-detail-header {
+  padding: 120px 5% 50px;
+  display: flex;
+  gap: 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.movie-poster {
+  width: 300px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+.movie-info {
+  flex: 1;
+}
+
+.movie-meta {
+  display: flex;
+  gap: 20px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.tag {
+  background: var(--surface-color);
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--surface-border);
+}
+
+/* Rating and Reviews */
+.reviews-section {
+  padding: 50px 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.review-form {
+  margin-bottom: 50px;
+  padding: 30px;
+}
+
+.star-rating {
+  font-size: 2rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.star {
+  transition: color 0.2s;
+}
+
+.star:hover, .star.active {
+  color: #ffc107;
+}
+
+.review-textarea {
+  width: 100%;
+  height: 120px;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--surface-border);
+  background: rgba(0,0,0,0.2);
+  color: white;
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 20px;
+  outline: none;
+}
+
+.review-textarea:focus {
+  border-color: var(--accent-primary);
+}
+
+/* About Us */
+.about-hero {
+  padding: 150px 5% 80px;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 0 5% 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  padding: 40px 30px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--accent-primary);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: var(--accent-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2.5rem; }
+  .motd-card, .movie-detail-header { flex-direction: column; }
+  .movie-poster { width: 100%; max-width: 300px; margin: 0 auto; }
+  .subscribe-form { flex-direction: column; }
+  .nav-links { display: none; } /* Simplified for mobile */
+}

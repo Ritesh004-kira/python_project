@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interstellar - Moctale</title>
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar glass">
+        <a href="index.html" class="nav-brand">Moctale</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="index.html#motd">Movie of the Day</a>
+            <a href="login.html" class="btn btn-outline">Login</a>
+        </div>
+    </nav>
+
+    <!-- Movie Detail Header -->
+    <header class="movie-detail-header">
+        <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Interstellar Poster" class="movie-poster">
+        <div class="movie-info">
+            <h1>Interstellar</h1>
+            <div class="movie-meta">
+                <span class="tag">Sci-Fi</span>
+                <span class="tag">Adventure</span>
+                <span class="tag">2014</span>
+                <span class="tag"><i class="fas fa-clock"></i> 2h 49m</span>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 1.1rem;">
+                A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.
+            </p>
+            <div style="margin-bottom: 30px;">
+                <strong>Director:</strong> Christopher Nolan <br>
+                <strong>Cast:</strong> Matthew McConaughey, Anne Hathaway, Jessica Chastain
+            </div>
+            
+            <a href="#" class="btn btn-primary"><i class="fas fa-play"></i> Watch Trailer</a>
+            <a href="#reviews" class="btn btn-outline"><i class="fas fa-pen"></i> Write a Review</a>
+        </div>
+    </header>
+
+    <!-- Rating & Reviews Section -->
+    <section id="reviews" class="reviews-section">
+        <h2 class="section-title">Ratings & Reviews</h2>
+        
+        <div class="review-form glass">
+            <h3>Leave your review</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Share your thoughts with the Moctale community.</p>
+            
+            <form action="#" method="POST">
+                <!-- Star Rating -->
+                <div class="star-rating">
+                    <i class="fas fa-star star" data-value="1"></i>
+                    <i class="fas fa-star star" data-value="2"></i>
+                    <i class="fas fa-star star" data-value="3"></i>
+                    <i class="fas fa-star star" data-value="4"></i>
+                    <i class="fas fa-star star" data-value="5"></i>
+                </div>
+                <input type="hidden" id="rating-value" name="rating" value="0">
+                
+                <!-- Review Text -->
+                <textarea class="review-textarea" name="review" placeholder="Write your review here... (What did you like or dislike?)" required></textarea>
+                
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+        </div>
+        
+        <!-- Mock Reviews -->
+        <div style="margin-top: 40px;">
+            <div class="glass" style="padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <strong>Alex Johnson</strong>
+                    <span style="color: #ffc107;"><i class="fas fa-star"></i> 5.0</span>
+                </div>
+                <p style="color: var(--text-secondary);">Absolutely breathtaking visuals and a profound story. Hans Zimmer's score is out of this world!</p>
+            </div>
+            
+            <div class="glass" style="padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <strong>Samantha Lee</strong>
+                    <span style="color: #ffc107;"><i class="fas fa-star"></i> 4.0</span>
+                </div>
+                <p style="color: var(--text-secondary);">A great sci-fi movie, very thought-provoking, though the ending was a bit confusing for me.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Load JavaScript -->
+    <script src="../animation/app.js"></script>
+</body>
+</html>

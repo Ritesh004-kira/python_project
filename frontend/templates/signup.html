@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Moctale</title>
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar glass">
+        <a href="index.html" class="nav-brand">Moctale</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="login.html" class="btn btn-outline">Login</a>
+        </div>
+    </nav>
+
+    <!-- Sign Up Form -->
+    <div class="auth-container">
+        <div class="auth-card glass">
+            <h2>Create an Account</h2>
+            <p>Join Moctale to get AI-powered movie recommendations.</p>
+            
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-input" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Create a password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">Sign Up</button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Already have an account? <a href="login.html" style="color: var(--accent-primary);">Log In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="../animation/app.js"></script>
+</body>
+</html>

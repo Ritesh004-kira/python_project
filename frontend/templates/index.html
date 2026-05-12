@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moctale - Smart Movie Recommendations</title>
+    <meta name="description" content="Discover your next favorite movie with our AI-powered recommendation engine.">
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar glass">
+        <a href="index.html" class="nav-brand">Moctale</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="movie.html">Movies</a>
+            <a href="about.html">About Us</a>
+            <a href="login.html" class="btn btn-outline">Login</a>
+            <a href="signup.html" class="btn btn-primary">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Hero & Search Section -->
+    <header class="hero">
+        <h1>Find the Perfect Movie <br>For Tonight.</h1>
+        <p>Advanced AI recommendations based on your unique taste. Search thousands of movies and let us do the magic.</p>
+        
+        <div class="search-container glass">
+            <input type="text" class="search-input" placeholder="Search for movies, actors, or directors...">
+            <select class="filter-select">
+                <option value="">All Genres</option>
+                <option value="action">Action</option>
+                <option value="comedy">Comedy</option>
+                <option value="drama">Drama</option>
+                <option value="scifi">Sci-Fi</option>
+                <option value="horror">Horror</option>
+            </select>
+            <select class="filter-select">
+                <option value="">Any Year</option>
+                <option value="2020s">2020s</option>
+                <option value="2010s">2010s</option>
+                <option value="2000s">2000s</option>
+            </select>
+            <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+        </div>
+    </header>
+
+    <!-- Movie of the Day -->
+    <section class="motd-section" id="motd">
+        <h2 class="section-title">Movie of the Day</h2>
+        <div class="motd-card glass">
+            <div class="motd-image">
+                <!-- Using a placeholder image that looks cinematic -->
+                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Movie of the Day">
+            </div>
+            <div class="motd-content">
+                <h2>Interstellar</h2>
+                <div class="movie-meta">
+                    <span class="tag">Sci-Fi</span>
+                    <span class="tag">2014</span>
+                    <span class="tag"><i class="fas fa-star" style="color: gold;"></i> 8.6</span>
+                </div>
+                <p>A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival. Experience the visual masterpiece of Christopher Nolan.</p>
+                <a href="movie.html" class="btn btn-primary">View Details & Rate</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subscribe Section -->
+    <section class="subscribe-section">
+        <div class="subscribe-card glass">
+            <h2>Never Miss a Good Movie</h2>
+            <p>Subscribe to get personalized 'Movie of the Day' recommendations directly to your WhatsApp or Email.</p>
+            <form id="subscribe-form" class="subscribe-form">
+                <input type="email" class="form-input" placeholder="Enter your email or phone number" required>
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Load JavaScript -->
+    <script src="../animation/app.js"></script>
+</body>
+</html>
