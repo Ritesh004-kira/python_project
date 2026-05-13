@@ -1,122 +1,181 @@
+import json
 from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash
-from backend.models.database import Movie
+from backend.models.database import Movie, db, Review
 from backend.services.recommendation import recommender
 
 movies_bp = Blueprint('movies', __name__)
 
+GENRE_LIST = [
+    "Action", "Adventure", "Animation", "Comedy", "Crime",
+    "Documentary", "Drama", "Family", "Fantasy", "Horror",
+    "Mystery", "Romance", "Sci-Fi", "Thriller", "War", "Western",
+]
+
 
 @movies_bp.route('/movies')
 def list_movies():
-    genre_filter = request.args.get('genre', None)
-    # Use popularity engine for the default browse page
-    movies = recommender.get_popular_movies(top_n=50, genre_filter=genre_filter)
-    return render_template('movie.html', movies=movies)
+    genre_filter = request.args.get('genre', '')
+    lang_filter  = request.args.get('lang', '')
+    sort_by      = request.args.get('sort', 'popularity')   # popularity | imdb_rating | year
+    page         = request.args.get('page', 1, type=int)
+    per_page     = 40
+
+    q = Movie.query
+    if genre_filter:
+        q = q.filter(Movie.genre.ilike(f"%{genre_filter}%"))
+    if lang_filter == 'hi':
+        q = q.filter(Movie.language == 'hi')
+    elif lang_filter == 'en':
+        q = q.filter(Movie.language == 'en')
+
+    if sort_by == 'imdb_rating':
+        q = q.order_by(Movie.imdb_rating.desc())
+    elif sort_by == 'year':
+        q = q.order_by(Movie.year.desc())
+    else:
+        q = q.order_by(Movie.popularity.desc())
+
+    pagination = q.paginate(page=page, per_page=per_page, error_out=False)
+    movies     = pagination.items
+
+    return render_template(
+        'movies.html',
+        movies=movies,
+        genre_list=GENRE_LIST,
+        genre_filter=genre_filter,
+        lang_filter=lang_filter,
+        sort_by=sort_by,
+        pagination=pagination,
+    )
 
 
 @movies_bp.route('/movie/<int:movie_id>', methods=['GET', 'POST'])
 def movie_detail(movie_id):
     movie = Movie.query.get_or_404(movie_id)
 
-    if request.method == 'POST' and 'user_id' in session:
+    if request.method == 'POST':
+        if 'user_id' not in session:
+            return redirect(url_for('auth.login'))
         rating = request.form.get('rating', type=float)
-        text   = request.form.get('review')
-        if rating and text:
-            from backend.models.database import db, Review
-            new_review = Review(rating=rating, text=text,
-                                user_id=session['user_id'], movie_id=movie.id)
-            db.session.add(new_review)
+        text   = request.form.get('review', '').strip()
+        if rating:
+            # Check if user already reviewed this movie
+            existing = Review.query.filter_by(
+                user_id=session['user_id'], movie_id=movie.id
+            ).first()
+            if existing:
+                existing.rating = rating
+                existing.text   = text or existing.text
+            else:
+                new_review = Review(
+                    rating=rating, text=text or "No comment.",
+                    user_id=session['user_id'], movie_id=movie.id
+                )
+                db.session.add(new_review)
+
+            # Recompute average user rating on this movie
+            db.session.flush()
+            all_reviews = Review.query.filter_by(movie_id=movie.id).all()
+            movie.rating = round(sum(r.rating for r in all_reviews) / len(all_reviews), 1)
+
             db.session.commit()
-            # Bust this user's cached recommendations so the next load is fresh
             recommender.invalidate_user_cache(session['user_id'])
-            # Refresh TF-IDF index and content cache
             recommender.refresh_content_index()
             return redirect(url_for('movies.movie_detail', movie_id=movie_id))
         else:
             flash("Please provide both a star rating and a review text.", "error")
 
-    # ── Content-Based: similar movies sidebar ──────────────────────
-    similar_movies = recommender.get_similar_movies(movie.title, top_n=5)
+    # Parse cast JSON
+    cast_list = []
+    if movie.cast:
+        try:
+            cast_list = json.loads(movie.cast)
+        except Exception:
+            pass
 
-    # ── Hybrid: personalised "You may also like" section ───────────
+    # Similar + hybrid recs
+    similar_movies = recommender.get_similar_movies(movie.title, top_n=12)
+
     hybrid_recs = []
     if 'user_id' in session:
         hybrid_recs = recommender.get_recommendations_for_user(
             user_id=session['user_id'],
             seed_movie_title=movie.title,
-            top_n=6,
+            top_n=12,
         )
     else:
-        # For anonymous users fall back to popularity-based recommendations
-        hybrid_recs = recommender.get_popular_movies(top_n=6)
+        hybrid_recs = recommender.get_popular_movies(top_n=12)
+
+    # User's existing review for this movie
+    user_review = None
+    if 'user_id' in session:
+        user_review = Review.query.filter_by(
+            user_id=session['user_id'], movie_id=movie.id
+        ).first()
 
     return render_template(
-        'movie.html',
+        'movie_detail.html',
         movie=movie,
+        cast_list=cast_list,
         similar_movies=similar_movies,
         hybrid_recs=hybrid_recs,
-        single_view=True,
+        user_review=user_review,
     )
 
 
 @movies_bp.route('/search')
 def search():
-    query = request.args.get('q', '')
+    query = request.args.get('q', '').strip()
     genre = request.args.get('genre', '')
-    year  = request.args.get('year', '')
+    lang  = request.args.get('lang', '')
 
-    movies_query = Movie.query
-
+    q = Movie.query
     if query:
-        movies_query = movies_query.filter(
-            Movie.title.ilike(f'%{query}%') | Movie.description.ilike(f'%{query}%')
+        q = q.filter(
+            Movie.title.ilike(f'%{query}%') |
+            Movie.overview.ilike(f'%{query}%') |
+            Movie.director.ilike(f'%{query}%')
         )
     if genre:
-        movies_query = movies_query.filter(Movie.genre.ilike(f'%{genre}%'))
-    if year:
-        if year.endswith('s'):
-            decade = int(year[:4])
-            movies_query = movies_query.filter(
-                Movie.year >= str(decade), Movie.year < str(decade + 10)
-            )
-        else:
-            movies_query = movies_query.filter(Movie.year == year)
+        q = q.filter(Movie.genre.ilike(f'%{genre}%'))
+    if lang:
+        q = q.filter(Movie.language == lang)
 
-    results = movies_query.all()
-    return render_template('movie.html', movies=results, search_query=query)
+    results = q.order_by(Movie.popularity.desc()).limit(60).all()
+    return render_template(
+        'search.html',
+        results=results,
+        query=query,
+        genre=genre,
+        genre_list=GENRE_LIST,
+    )
 
+
+# ── JSON APIs ─────────────────────────────────────────────────────────
 
 @movies_bp.route('/api/recommend', methods=['POST'])
 def api_recommend():
-    """JSON API — returns hybrid recommendations for a given movie title and user."""
-    data       = request.json or {}
+    data        = request.json or {}
     movie_title = data.get('title', '')
-    user_id    = session.get('user_id', 0)
-    top_n      = data.get('top_n', 6)
+    user_id     = session.get('user_id', 0)
+    top_n       = data.get('top_n', 12)
 
     recs = recommender.get_recommendations_for_user(
-        user_id=user_id,
-        seed_movie_title=movie_title,
-        top_n=top_n,
+        user_id=user_id, seed_movie_title=movie_title, top_n=top_n
     )
-
-    return jsonify({
-        'recommendations': [
-            {'id': m.id, 'title': m.title, 'genre': m.genre,
-             'year': m.year, 'image_url': m.image_url, 'rating': m.rating}
-            for m in recs
-        ]
-    })
+    return jsonify({'recommendations': [_movie_json(m) for m in recs]})
 
 
-@movies_bp.route('/api/popular', methods=['GET'])
+@movies_bp.route('/api/popular')
 def api_popular():
-    """JSON API — returns the top popular movies."""
-    genre = request.args.get('genre', None)
-    recs  = recommender.get_popular_movies(top_n=10, genre_filter=genre)
-    return jsonify({
-        'movies': [
-            {'id': m.id, 'title': m.title, 'genre': m.genre,
-             'year': m.year, 'image_url': m.image_url, 'rating': m.rating}
-            for m in recs
-        ]
-    })
+    genre = request.args.get('genre')
+    recs  = recommender.get_popular_movies(top_n=20, genre_filter=genre)
+    return jsonify({'movies': [_movie_json(m) for m in recs]})
+
+
+def _movie_json(m):
+    return {
+        'id': m.id, 'title': m.title, 'genre': m.genre,
+        'year': m.year, 'image_url': m.image_url,
+        'imdb_rating': m.imdb_rating, 'trailer_key': m.trailer_key,
+    }

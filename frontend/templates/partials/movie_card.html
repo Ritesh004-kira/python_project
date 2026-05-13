@@ -1,0 +1,24 @@
+<a href="{{ url_for('movies.movie_detail', movie_id=m.id) }}" class="movie-card" title="{{ m.title }}">
+    <div class="card-poster">
+        <img src="{{ m.image_url }}" alt="{{ m.title }}" loading="lazy"
+             onerror="this.src='https://via.placeholder.com/300x450/141420/666?text=No+Poster'">
+        {% if m.trailer_key %}
+        <button class="card-play-btn" onclick="event.preventDefault();openTrailer('{{ m.trailer_key }}')">
+            <i class="fas fa-play"></i>
+        </button>
+        {% endif %}
+        <div class="card-overlay">
+            <div class="card-rating"><i class="fas fa-star"></i> {{ m.imdb_rating }}</div>
+            <div class="card-genres">
+                {% for g in m.genre.split(',')[:2] %}
+                <span>{{ g.strip() }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% if m.language == 'hi' %}<span class="card-lang-badge">HI</span>{% endif %}
+    </div>
+    <div class="card-info">
+        <h3 class="card-title">{{ m.title }}</h3>
+        <span class="card-year">{{ m.year }}</span>
+    </div>
+</a>

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }} ({{ movie.year }}) — CineAI{% endblock %}
+{% block meta_desc %}{{ movie.description }} Directed by {{ movie.director }}. IMDb: {{ movie.imdb_rating }}/10{% endblock %}
+
+{% block content %}
+
+<!-- ── Backdrop Banner ────────────────────────────────────────────── -->
+<div class="detail-backdrop" style="background-image: url('{{ movie.backdrop_url or movie.image_url }}');">
+    <div class="detail-backdrop-grad"></div>
+</div>
+
+<!-- ── Movie Detail Panel ─────────────────────────────────────────── -->
+<section class="detail-section">
+    <div class="detail-layout">
+
+        <!-- Poster -->
+        <div class="detail-poster-wrap">
+            <img src="{{ movie.image_url }}" alt="{{ movie.title }}" class="detail-poster"
+                 onerror="this.src='https://via.placeholder.com/400x600/141420/666?text=No+Poster'">
+            {% if movie.trailer_key %}
+            <button class="detail-trailer-btn" onclick="openTrailer('{{ movie.trailer_key }}')">
+                <i class="fas fa-play"></i> Watch Trailer
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div class="detail-info">
+            {% if movie.language == 'hi' %}<span class="lang-badge hindi" style="margin-bottom:12px;display:inline-block;">HINDI</span>{% endif %}
+            <h1 class="detail-title">{{ movie.title }}</h1>
+
+            <!-- Meta row -->
+            <div class="detail-meta">
+                <span class="imdb-badge-lg"><i class="fas fa-star"></i> {{ movie.imdb_rating }}<small>/10</small></span>
+                <span class="meta-pill">{{ movie.year }}</span>
+                {% if movie.runtime %}<span class="meta-pill">{{ movie.runtime }} min</span>{% endif %}
+                {% for g in movie.genre.split(',')[:3] %}
+                <span class="meta-pill genre-pill">{{ g.strip() }}</span>
+                {% endfor %}
+                {% if movie.language == 'hi' %}<span class="meta-pill">Hindi</span>
+                {% elif movie.language == 'en' %}<span class="meta-pill">English</span>{% endif %}
+            </div>
+
+            {% if movie.director %}
+            <p class="detail-director"><span>Director:</span> {{ movie.director }}</p>
+            {% endif %}
+
+            <!-- Cast -->
+            {% if cast_list %}
+            <p class="detail-director"><span>Cast:</span> {{ cast_list | join(', ') }}</p>
+            {% endif %}
+
+            <!-- Overview -->
+            <div class="detail-overview">
+                {{ movie.overview or movie.description }}
+            </div>
+
+            <!-- Vote count -->
+            <p class="detail-votes"><i class="fas fa-users"></i> {{ "{:,}".format(movie.imdb_votes) }} ratings on TMDB</p>
+
+            <!-- Actions -->
+            <div class="detail-actions">
+                {% if movie.trailer_key %}
+                <button class="btn-play" onclick="openTrailer('{{ movie.trailer_key }}')">
+                    <i class="fas fa-play"></i> Watch Trailer
+                </button>
+                {% endif %}
+                <a href="#reviews" class="btn-info">
+                    <i class="fas fa-pen"></i> Write Review
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Cast Row ───────────────────────────────────────────────────── -->
+{% if cast_list %}
+<section class="content-section">
+    <h2 class="section-heading">Top Cast</h2>
+    <div class="cast-row">
+        {% for actor in cast_list %}
+        <div class="cast-card">
+            <div class="cast-avatar">{{ actor[0] }}</div>
+            <span class="cast-name">{{ actor }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- ── Rating & Reviews ───────────────────────────────────────────── -->
+<section class="content-section" id="reviews">
+    <h2 class="section-heading">Rate & Review</h2>
+
+    {% if session.user_id %}
+    <div class="review-form-card">
+        <h3>{{ "Update Your Review" if user_review else "Your Rating" }}</h3>
+        <form action="{{ url_for('movies.movie_detail', movie_id=movie.id) }}" method="POST" id="reviewForm">
+            <div class="star-widget" id="starWidget">
+                {% for i in range(1,6) %}
+                <i class="fas fa-star star-btn" data-val="{{ i }}"
+                   {% if user_review and user_review.rating >= i %}style="color:#f5c518"{% endif %}></i>
+                {% endfor %}
+                <span class="star-label" id="starLabel">
+                    {% if user_review %}You rated {{ user_review.rating }}/5{% else %}Click to rate{% endif %}
+                </span>
+            </div>
+            <input type="hidden" name="rating" id="ratingInput" value="{{ user_review.rating if user_review else 0 }}">
+            <textarea name="review" class="review-textarea"
+                placeholder="Write your thoughts about {{ movie.title }}…">{{ user_review.text if user_review else '' }}</textarea>
+            <button type="submit" class="btn-play" id="submitReview" {% if not user_review %}disabled{% endif %}>
+                <i class="fas fa-paper-plane"></i>
+                {{ "Update Review" if user_review else "Submit Review" }}
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <div class="login-prompt">
+        <i class="fas fa-lock"></i>
+        <p><a href="{{ url_for('auth.login') }}">Log in</a> to rate this movie and get personalized recommendations.</p>
+    </div>
+    {% endif %}
+
+    <!-- Reviews list -->
+    {% if movie.reviews %}
+    <div class="reviews-list">
+        {% for r in movie.reviews | sort(attribute='created_at', reverse=True) %}
+        <div class="review-item">
+            <div class="review-header">
+                <div class="review-avatar">{{ r.user.name[0].upper() }}</div>
+                <div>
+                    <strong>{{ r.user.name }}</strong>
+                    <div class="review-stars">
+                        {% for i in range(1,6) %}
+                        <i class="fas fa-star" style="color: {% if r.rating >= i %}#f5c518{% else %}#444{% endif %}; font-size:0.85rem;"></i>
+                        {% endfor %}
+                        <span>{{ r.rating }}/5</span>
+                    </div>
+                </div>
+                <span class="review-date">{{ r.created_at.strftime('%b %d, %Y') }}</span>
+            </div>
+            {% if r.text and r.text != 'No comment.' %}
+            <p class="review-text">{{ r.text }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-reviews">No reviews yet — be the first!</p>
+    {% endif %}
+</section>
+
+<!-- ── Similar Movies ─────────────────────────────────────────────── -->
+{% if similar_movies %}
+<section class="content-section">
+    <div class="row-header">
+        <h2 class="row-title">Similar Movies <span class="engine-badge">Content-Based AI</span></h2>
+    </div>
+    <div class="row-wrapper">
+        <button class="row-btn row-prev"><i class="fas fa-chevron-left"></i></button>
+        <div class="movie-row" id="row-similar">
+            {% for m in similar_movies %}
+            {% include "partials/movie_card.html" %}
+            {% endfor %}
+        </div>
+        <button class="row-btn row-next"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</section>
+{% endif %}
+
+<!-- ── You May Also Like ──────────────────────────────────────────── -->
+{% if hybrid_recs %}
+<section class="content-section">
+    <div class="row-header">
+        <h2 class="row-title">
+            You May Also Like
+            <span class="engine-badge">{% if session.user_id %}AI Hybrid{% else %}Popular{% endif %}</span>
+        </h2>
+    </div>
+    <div class="row-wrapper">
+        <button class="row-btn row-prev"><i class="fas fa-chevron-left"></i></button>
+        <div class="movie-row" id="row-hybrid">
+            {% for m in hybrid_recs %}
+            {% include "partials/movie_card.html" %}
+            {% endfor %}
+        </div>
+        <button class="row-btn row-next"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
