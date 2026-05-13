@@ -47,6 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Review Form Validation
+    const reviewForm = document.querySelector('.review-form form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', function(e) {
+            const ratingInput = document.getElementById('rating-value');
+            if (ratingInput && (ratingInput.value === "0" || !ratingInput.value)) {
+                e.preventDefault();
+                alert("Please select a star rating before submitting your review.");
+            }
+        });
+    }
+
     // Form Submission Interactions (Mock)
     const subscribeForm = document.getElementById('subscribe-form');
     if(subscribeForm) {

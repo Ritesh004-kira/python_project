@@ -22,7 +22,7 @@ class Movie(db.Model):
     image_url = db.Column(db.String(500), nullable=True)
     rating = db.Column(db.Float, default=0.0)
 
-    reviews = db.relationship('Review', backref='movie', lazy=True)
+    reviews = db.relationship('Review', backref='movie', lazy=True, order_by="Review.created_at.desc()")
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)

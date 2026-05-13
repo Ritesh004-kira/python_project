@@ -103,6 +103,18 @@
     <section id="reviews" class="reviews-section">
         <h2 class="section-title">Ratings & Reviews</h2>
         
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div style="margin-bottom: 20px;">
+                {% for category, message in messages %}
+                    <div style="padding: 15px; border-radius: 8px; margin-bottom: 10px; background: rgba(255, 60, 60, 0.2); border: 1px solid rgba(255, 60, 60, 0.3); color: #fff;">
+                        <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>{{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         {% if session.user_id %}
         <div class="review-form glass">
             <h3>Leave your review</h3>

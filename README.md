@@ -19,7 +19,7 @@ Mera Cinema is a modular, production-grade hybrid recommendation engine for movi
 - **Modern UI**: Clean, responsive design with a "Glassmorphism" aesthetic.
 
 ## Deployment
-This project is configured for deployment on **Hugging Face Spaces** using Docker.
+This project is configured for deployment on **Railwayapp**.
 
 ### Local Setup
 1. Create a virtual environment: `python -m venv venv`

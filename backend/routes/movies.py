@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash
 from backend.models.database import Movie
 from backend.services.recommendation import recommender
 
@@ -31,6 +31,8 @@ def movie_detail(movie_id):
             # Refresh TF-IDF index and content cache
             recommender.refresh_content_index()
             return redirect(url_for('movies.movie_detail', movie_id=movie_id))
+        else:
+            flash("Please provide both a star rating and a review text.", "error")
 
     # ── Content-Based: similar movies sidebar ──────────────────────
     similar_movies = recommender.get_similar_movies(movie.title, top_n=5)
