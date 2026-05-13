@@ -1,39 +1,60 @@
-{% extends "base.html" %}
-{% block title %}Login — CineAI{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mera Cinema</title>
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
 
-{% block content %}
-<div class="auth-page">
-    <div class="auth-card">
-        <div class="auth-logo"><i class="fas fa-film"></i> CineAI</div>
-        <h1 class="auth-title">Welcome Back</h1>
-        <p class="auth-sub">Sign in to get your personalized recommendations.</p>
+    <!-- Navbar -->
+    <nav class="navbar glass">
+        <a href="{{ url_for('main.index') }}" class="nav-brand">Mera Cinema</a>
+        <div class="nav-links">
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('auth.signup') }}" class="btn btn-outline">Sign Up</a>
+        </div>
+    </nav>
 
-        <form method="POST" class="auth-form">
-            <div class="form-group">
-                <label><i class="fas fa-envelope"></i> Email</label>
-                <input type="email" name="email" required placeholder="you@example.com" class="form-input">
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-lock"></i> Password</label>
-                <input type="password" name="password" required placeholder="••••••••" class="form-input">
-            </div>
-            <button type="submit" class="btn-play" style="width:100%;justify-content:center;">
-                <i class="fas fa-sign-in-alt"></i> Log In
-            </button>
-        </form>
+    <!-- Login Form -->
+    <div class="auth-container">
+        <div class="auth-card glass">
+            <h2>Welcome Back</h2>
+            <p>Log in to access your personalized recommendations.</p>
+            
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <ul class="flashes" style="color: red; list-style: none; padding: 0;">
+                {% for message in messages %}
+                  <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
 
-        <p class="auth-switch">
-            Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign Up</a>
-        </p>
-
-        <div class="demo-accounts">
-            <p class="demo-label"><i class="fas fa-info-circle"></i> Demo accounts</p>
-            <div class="demo-grid">
-                <span>alice@example.com / alice123</span>
-                <span>bob@example.com / bob123</span>
-                <span>priya@example.com / priya123</span>
+            <form action="{{ url_for('auth.login') }}" method="POST">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">Log In</button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Don't have an account? <a href="{{ url_for('auth.signup') }}" style="color: var(--accent-primary);">Sign Up</a></p>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <!-- Load JavaScript -->
+    <script src="{{ url_for('static', filename='animation/app.js') }}"></script>
+</body>
+</html>
